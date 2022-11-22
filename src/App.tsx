@@ -1,31 +1,29 @@
-import "./App.css";
-import { io } from "socket.io-client";
-import { useEffect } from "react";
-
-var socket = io();
+import { Paper, Grid, Container } from "@mui/material";
+import Header from "./components/Header";
+import ContactsContainer from "./components/ContactsContainer";
+import ChatContainer from "./components/ChatContainer";
+import ProfileContainer from "./components/ProfileContainer";
 
 const App = () => {
-  useEffect(() => {
-    socket.on("connection", (socket) => {
-      console.log("a user connected");
-      socket.on("disconnect", () => {
-        console.log("user disconnected");
-      });
-    });
-  }, []);
-
   return (
-    <div className="App">
-      <h1>CHAT</h1>
-      <div className="card">
-        <h1>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto
-          itaque quam quasi. Quibusdam iure ea corporis autem accusantium fugit
-          sunt dolores cum iste quis, quisquam nemo similique labore ducimus
-          repellat!
-        </h1>
-      </div>
-    </div>
+    <Container sx={{ p: 2 }} maxWidth="xl">
+      <Paper sx={{ borderRadius: 2, overflow: "hidden" }}>
+        <Grid container>
+          <Grid item xs={12}>
+            <Header />
+          </Grid>
+          <Grid item xs={12} sm={12} md={4} lg={3} xl={3}>
+            <ContactsContainer />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={6} xl={7}>
+            <ChatContainer />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+            <ProfileContainer />
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 };
 
