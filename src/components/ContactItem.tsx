@@ -11,40 +11,46 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
+import { useWebSocketContext } from "../context/webSocketContext";
+import { HeadquarterProps } from "../interfaces/types";
 
 interface ContactItemProps {
-  index: number;
+  client: HeadquarterProps;
 }
 
-const ContactItem = ({ index }: ContactItemProps) => (
-  <ListItemButton selected={index === 10}>
-    <ListItemAvatar>
-      <Badge
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        badgeContent={index === 0 ? <FiberManualRecord color="success" fontSize="small" /> : undefined}
-      >
-        <Avatar src="https://www.numeromag.nl/wp-content/uploads/2020/02/webp.net-resizeimage_46-960x1000.jpg" />
-      </Badge>
-    </ListItemAvatar>
-    <ListItemText
-      primary={
-        <Typography variant="inherit" noWrap color="inherit" sx={{ maxWidth: "calc((100%) - 55px)" }}>
-          Someone name super extra large name
-        </Typography>
-      }
-      secondary={
-        <Typography variant="body2" noWrap sx={{ maxWidth: "calc((100%) - 55px)", color: "#aaa" }}>
-          Someone name super extra large name
-        </Typography>
-      }
-    />
-    <ListItemSecondaryAction>
-      <Stack direction="column" spacing={0} alignItems="end">
-        <FormHelperText>14:00 PM</FormHelperText>
-        {index ? <Chip label={index} size="small" color="primary" /> : <FormHelperText>.</FormHelperText>}
-      </Stack>
-    </ListItemSecondaryAction>
-  </ListItemButton>
-);
+const ContactItem = ({ client }: ContactItemProps) => {
+  const { selectedClient, setSelectedClient } = useWebSocketContext();
+
+  return (
+    <ListItemButton selected={client._id === selectedClient?._id} onClick={() => setSelectedClient({ ...client })}>
+      <ListItemAvatar>
+        <Badge
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          badgeContent={<FiberManualRecord color="success" fontSize="small" />}
+        >
+          <Avatar src={client.logo} alt={client.description} />
+        </Badge>
+      </ListItemAvatar>
+      <ListItemText
+        primary={
+          <Typography variant="body2" noWrap color="inherit" sx={{ maxWidth: "calc((100%) - 55px)" }}>
+            {client.description}
+          </Typography>
+        }
+        secondary={
+          <Typography variant="caption" noWrap sx={{ maxWidth: "calc((100%) - 55px)", color: "#aaa" }}>
+            RUC: {client.ruc}
+          </Typography>
+        }
+      />
+      <ListItemSecondaryAction>
+        <Stack direction="column" spacing={0} alignItems="end">
+          <FormHelperText>14:00 PM</FormHelperText>
+          <Chip label={2} size="small" color="primary" />
+        </Stack>
+      </ListItemSecondaryAction>
+    </ListItemButton>
+  );
+};
 
 export default ContactItem;

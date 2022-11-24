@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client";
-import WebSocketProvider from "./context/WebSocketContext";
+import WebSocketProvider from "./context/webSocketContext";
 import GlobalStyles from "./theme/GlobalStyles";
 import ThemeConfig from "./theme";
 import App from "./App";
