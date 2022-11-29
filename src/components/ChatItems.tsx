@@ -1,16 +1,19 @@
 import { MoreVert } from "@mui/icons-material";
 import { Avatar, Card, FormHelperText, IconButton, Stack, Typography } from "@mui/material";
+import { MessageProps } from "../interfaces/types";
+import dayjs from "dayjs";
 
 interface ChatItemsProps {
   isMine: boolean;
+  message: MessageProps;
 }
 
 interface MessagesContainerProps {
   isMine: boolean;
-  index: number;
+  text: string;
 }
 
-const ChatItems = ({ isMine }: ChatItemsProps) => (
+const ChatItems = ({ isMine, message }: ChatItemsProps) => (
   <Stack alignItems={isMine ? "flex-end" : "flex-start"}>
     <Stack spacing={1} sx={{ width: "calc((100%) - 100px)" }} pr={2}>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ pl: isMine ? 1 : 0 }}>
@@ -19,15 +22,15 @@ const ChatItems = ({ isMine }: ChatItemsProps) => (
           sx={{ height: 25, width: 25 }}
         />
         <Typography>
-          Lorem, ipsum dolor
+          {message.sender}
           <FormHelperText component="span" sx={{ ml: 5 }}>
-            10:12: AM
+            {dayjs(message.datetime).format("hh:mm a")}
           </FormHelperText>
         </Typography>
       </Stack>
       <Stack spacing={0.5}>
-        {[1, 2, 3].map((item, index) => (
-          <MessageContainer index={index} isMine={isMine} />
+        {[message.content].map((text, index) => (
+          <MessageContainer text={text} key={index} isMine={isMine} />
         ))}
       </Stack>
     </Stack>
@@ -36,30 +39,18 @@ const ChatItems = ({ isMine }: ChatItemsProps) => (
 
 export default ChatItems;
 
-const MessageContainer = ({ isMine, index }: MessagesContainerProps) => (
+const MessageContainer = ({ isMine, text }: MessagesContainerProps) => (
   <Stack direction="row" spacing={1}>
     {isMine ? (
       <>
         <IconButton>
           <MoreVert />
         </IconButton>
-        <Card sx={{ px: 2, py: 1, bgcolor: isMine ? "primary.main" : null }}>
-          {index === 2 || index === 3
-            ? "Accusantium nobis omnis amet quisquam enim atque expedita. Ipsa hic, sit, fugiat ullam"
-            : ""}
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          {index === 3 ? "Architecto accusamus cum consequatur" : ""}
-        </Card>
+        <Card sx={{ px: 2, py: 1, bgcolor: isMine ? "primary.main" : null }}>{text}</Card>
       </>
     ) : (
       <>
-        <Card sx={{ px: 2, py: 1 }}>
-          {index === 2 || index === 3
-            ? "Accusantium nobis omnis amet quisquam enim atque expedita. Ipsa hic, sit, fugiat ullam"
-            : ""}
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          {index === 3 ? "Architecto accusamus cum consequatur" : ""}
-        </Card>
+        <Card sx={{ px: 2, py: 1 }}>{text}</Card>
         <IconButton>
           <MoreVert />
         </IconButton>

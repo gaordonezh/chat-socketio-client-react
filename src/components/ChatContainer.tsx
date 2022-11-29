@@ -1,13 +1,13 @@
-import { BorderColor, Image, InsertEmoticon, NearMe, Widgets } from "@mui/icons-material";
-import { Avatar, Grid, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
+import { Widgets } from "@mui/icons-material";
+import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
 import { useWebSocketContext } from "../context/webSocketContext";
 import { sharedStyles } from "../utils/consts";
 import CardContainer from "./CardContainer";
+import ChatInput from "./ChatInput";
 import ChatItems from "./ChatItems";
-import Input from "./Input";
 
 const ChatContainer = () => {
-  const { selectedClient, messages } = useWebSocketContext();
+  const { selectedClient, messages, user } = useWebSocketContext();
 
   return (
     <CardContainer sx={{ bgcolor: "#141517", ...sharedStyles }}>
@@ -22,51 +22,29 @@ const ChatContainer = () => {
                 {selectedClient?.description}
               </Typography>
               <Typography variant="body2" noWrap>
-                RUC: {selectedClient?.ruc}
+                {`RUC: ${selectedClient?.ruc}`}
               </Typography>
             </Grid>
             <Grid item xs={12} pt={5}>
               <Stack spacing={4} sx={{ overflowY: "auto", height: "calc((100vh) - 375px)", pb: 2 }}>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((item, index) => (
-                  <ChatItems key={item} isMine={index === 8} />
-                ))}
+                {messages.length ? (
+                  messages.map((message, index) => (
+                    <ChatItems key={index} message={message} isMine={message.sender === user?._id} />
+                  ))
+                ) : (
+                  <Box textAlign="center">
+                    <EmptyMessage title="Aún no tienes mensajes." />
+                  </Box>
+                )}
               </Stack>
             </Grid>
             <Grid item xs={12} sx={{ bgcolor: "#292931" }} p={2}>
-              <Input
-                size="medium"
-                fullWidth
-                sx={{ borderRadius: 20, overflow: "hidden", border: "1px solid #aaa" }}
-                placeholder="Ingresar un mensaje..."
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <BorderColor />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton>
-                        <Image />
-                      </IconButton>
-                      <IconButton>
-                        <InsertEmoticon />
-                      </IconButton>
-                      <IconButton>
-                        <NearMe />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              <ChatInput />
             </Grid>
           </>
         ) : (
           <Grid item xs={12} container alignItems="center" justifyContent="center" direction="column">
-            <Widgets sx={{ fontSize: 100 }} />
-            <Typography textAlign="center" variant="h5" component="p">
-              Selecciona una sede
-            </Typography>
+            <EmptyMessage title="Selecciona una sede" />
           </Grid>
         )}
       </Grid>
@@ -75,3 +53,14 @@ const ChatContainer = () => {
 };
 
 export default ChatContainer;
+
+const EmptyMessage = ({ title }: { title: string }) => {
+  return (
+    <>
+      <Widgets sx={{ fontSize: 100 }} />
+      <Typography textAlign="center" variant="h5" component="p">
+        {title}
+      </Typography>
+    </>
+  );
+};

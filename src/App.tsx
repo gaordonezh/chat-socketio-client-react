@@ -5,6 +5,8 @@ import ChatContainer from "./components/ChatContainer";
 import ProfileContainer from "./components/ProfileContainer";
 
 const App = () => {
+  const isOpen = false;
+
   return (
     <Container sx={{ p: 2 }} maxWidth="xl">
       <Paper sx={{ borderRadius: 2, overflow: "hidden" }}>
@@ -15,12 +17,14 @@ const App = () => {
           <Grid item xs={12} sm={12} md={4} lg={3} xl={3}>
             <ContactsContainer />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={6} xl={7}>
+          <Grid item xs={12} sm={isOpen ? 6 : 12} md={isOpen ? 4 : 8} lg={isOpen ? 6 : 9} xl={isOpen ? 7 : 9}>
             <ChatContainer />
           </Grid>
-          <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-            <ProfileContainer />
-          </Grid>
+          {isOpen ? (
+            <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+              <ProfileContainer />
+            </Grid>
+          ) : null}
         </Grid>
       </Paper>
     </Container>

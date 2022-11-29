@@ -7,7 +7,7 @@ import ContactItem from "./ContactItem";
 import Input from "./Input";
 
 const ContactsContainer = () => {
-  const { headquarters } = useWebSocketContext();
+  const { contacts } = useWebSocketContext();
   return (
     <CardContainer sx={{ bgcolor: "#22222a", ...sharedStyles }}>
       <Stack spacing={3} direction="column">
@@ -28,7 +28,7 @@ const ContactsContainer = () => {
         />
         <Stack sx={{ overflowY: "auto", height: "calc((100vh) - 310px)" }}>
           <List subheader={<ListSubheader>Recibidos</ListSubheader>}>
-            {headquarters.map((item) => (
+            {contacts.map((item) => (
               <ContactItem client={item} key={item._id} />
             ))}
           </List>

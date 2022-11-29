@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useWebSocketContext } from "../context/webSocketContext";
-import { HeadquarterProps } from "../interfaces/types";
+import { ContactProps } from "../interfaces/types";
 
 interface ContactItemProps {
-  client: HeadquarterProps;
+  client: ContactProps;
 }
 
 const ContactItem = ({ client }: ContactItemProps) => {

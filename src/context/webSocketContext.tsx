@@ -1,52 +1,78 @@
+import dayjs from "dayjs";
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { HeadquarterProps, MessageProps } from "../interfaces/types";
+import { RolEnum } from "../interfaces/enums";
+import { ContactProps, MessageProps, UserProps } from "../interfaces/types";
+import { tempUsers } from "../utils/consts";
 
 interface ContextProps {
   socket: Socket;
-  headquarters: Array<HeadquarterProps>;
-  setSelectedClient: Dispatch<SetStateAction<null | HeadquarterProps>>;
-  selectedClient: null | HeadquarterProps;
+  contacts: Array<ContactProps>;
+  setSelectedClient: Dispatch<SetStateAction<null | ContactProps>>;
+  selectedClient: null | ContactProps;
   messages: Array<MessageProps>;
+  handleSendMessage: (content: string) => void;
+  user: null | UserProps;
 }
 
 interface WebSocketProviderProps {
   children: ReactNode;
 }
 
+const socket = io("http://localhost:3000");
+
 const WebSocket = createContext({} as ContextProps);
 
 export const useWebSocketContext = () => useContext(WebSocket);
 
-const tempInitialData = {
-  from: "60e5cd48328de500159ab9a6",
-  company: "ym",
-};
-
 const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
-  const socket = io("http://localhost:3000");
-
-  const [headquarters, setHeadquarters] = useState<Array<HeadquarterProps>>([]);
+  const [contacts, setContacts] = useState<Array<ContactProps>>([]);
   const [messages, setMessages] = useState<Array<MessageProps>>([]);
-  const [selectedClient, setSelectedClient] = useState<null | HeadquarterProps>(null);
+  const [selectedClient, setSelectedClient] = useState<null | ContactProps>(null);
+  const [user, setUser] = useState<null | UserProps>(null);
 
   useEffect(() => {
-    socket.on("connect_client", (params) => {
-      if (params.connection) {
-        socket.emit("first_connection", { headquarter_id: tempInitialData.from, company_url: tempInitialData.company });
-        socket.on("send_headquarters", (list) => {
-          setHeadquarters([...list]);
-        });
-      }
-    });
+    if (user) {
+      socket.on("connect_client", ({ connection }) => {
+        if (connection) {
+          socket.emit("first_connection", {
+            headquarter_id: user.headquarter,
+            company_url: "ym",
+            isAdmin: user.rol === RolEnum.SUPERNAP,
+          });
+          socket.on("send_headquarters", (list) => {
+            setContacts([...list]);
+          });
+        }
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    getUserData();
   }, []);
 
+  const getUserData = () => {
+    const storeKey = "user";
+    const stored = sessionStorage.getItem(storeKey);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setUser({ ...parsed });
+    } else {
+      const randomIndex = Math.floor(Math.random() * 4);
+      const extracted = tempUsers[randomIndex];
+      sessionStorage.setItem(storeKey, JSON.stringify(extracted));
+      setUser({ ...extracted });
+    }
+  };
+
+  const companyId = user?.company || selectedClient?.company;
+
   useEffect(() => {
-    if (selectedClient) {
+    if (selectedClient && user) {
       socket.emit("get_messages", {
-        headquarterFrom: tempInitialData.from,
-        headquarterTo: selectedClient._id,
-        company: tempInitialData.company,
+        room: selectedClient._id,
+        company_id: companyId,
       });
 
       socket.on("message_list", (response: Array<MessageProps>) => {
@@ -55,8 +81,18 @@ const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     }
   }, [selectedClient]);
 
+  const handleSendMessage = (content: string) => {
+    socket.emit("create_message", {
+      content,
+      datetime: dayjs().toISOString(),
+      company: companyId,
+      room: selectedClient?._id,
+      sender: user?._id,
+    });
+  };
+
   return (
-    <WebSocket.Provider value={{ socket, headquarters, selectedClient, setSelectedClient, messages }}>
+    <WebSocket.Provider value={{ socket, contacts, selectedClient, setSelectedClient, messages, handleSendMessage, user }}>
       {children}
     </WebSocket.Provider>
   );
