@@ -16,7 +16,13 @@ interface MessagesContainerProps {
 const ChatItems = ({ isMine, message }: ChatItemsProps) => (
   <Stack alignItems={isMine ? "flex-end" : "flex-start"}>
     <Stack spacing={1} sx={{ width: "calc((100%) - 100px)" }} pr={2}>
-      <Stack direction="row" spacing={2} alignItems="center" sx={{ pl: isMine ? 1 : 0 }}>
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ pl: isMine ? 1 : 0 }}
+        justifyContent={isMine ? "flex-end" : "flex-start"}
+      >
         <Avatar
           src="https://www.numeromag.nl/wp-content/uploads/2020/02/webp.net-resizeimage_46-960x1000.jpg"
           sx={{ height: 25, width: 25 }}
@@ -40,7 +46,7 @@ const ChatItems = ({ isMine, message }: ChatItemsProps) => (
 export default ChatItems;
 
 const MessageContainer = ({ isMine, text }: MessagesContainerProps) => (
-  <Stack direction="row" spacing={1}>
+  <Stack direction="row" spacing={1} justifyContent={isMine ? "flex-end" : "flex-start"}>
     {isMine ? (
       <>
         <IconButton>

@@ -1,5 +1,15 @@
 import dayjs from "dayjs";
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  LegacyRef,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { io, Socket } from "socket.io-client";
 import { RolEnum } from "../interfaces/enums";
 import { ContactProps, MessageProps, UserProps } from "../interfaces/types";
@@ -13,6 +23,7 @@ interface ContextProps {
   messages: Array<MessageProps>;
   handleSendMessage: (content: string) => void;
   user: null | UserProps;
+  bottomRef: LegacyRef<HTMLDivElement>;
 }
 
 interface WebSocketProviderProps {
@@ -26,6 +37,7 @@ const WebSocket = createContext({} as ContextProps);
 export const useWebSocketContext = () => useContext(WebSocket);
 
 const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [contacts, setContacts] = useState<Array<ContactProps>>([]);
   const [messages, setMessages] = useState<Array<MessageProps>>([]);
   const [selectedClient, setSelectedClient] = useState<null | ContactProps>(null);
@@ -66,6 +78,10 @@ const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     }
   };
 
+  useEffect(() => {
+    if (messages.length) bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [messages]);
+
   const companyId = user?.company || selectedClient?.company;
 
   useEffect(() => {
@@ -92,7 +108,9 @@ const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   };
 
   return (
-    <WebSocket.Provider value={{ socket, contacts, selectedClient, setSelectedClient, messages, handleSendMessage, user }}>
+    <WebSocket.Provider
+      value={{ socket, contacts, selectedClient, setSelectedClient, messages, handleSendMessage, user, bottomRef }}
+    >
       {children}
     </WebSocket.Provider>
   );

@@ -7,7 +7,7 @@ import ChatInput from "./ChatInput";
 import ChatItems from "./ChatItems";
 
 const ChatContainer = () => {
-  const { selectedClient, messages, user } = useWebSocketContext();
+  const { selectedClient, messages, user, bottomRef } = useWebSocketContext();
 
   return (
     <CardContainer sx={{ bgcolor: "#141517", ...sharedStyles }}>
@@ -28,14 +28,17 @@ const ChatContainer = () => {
             <Grid item xs={12} pt={5}>
               <Stack spacing={4} sx={{ overflowY: "auto", height: "calc((100vh) - 375px)", pb: 2 }}>
                 {messages.length ? (
-                  messages.map((message, index) => (
-                    <ChatItems key={index} message={message} isMine={message.sender === user?._id} />
-                  ))
+                  messages.map((message, index) => {
+                    const isMine = message.sender === user?._id;
+
+                    return <ChatItems key={index} message={message} isMine={isMine} />;
+                  })
                 ) : (
                   <Box textAlign="center">
                     <EmptyMessage title="Aún no tienes mensajes." />
                   </Box>
                 )}
+                <div ref={bottomRef} />
               </Stack>
             </Grid>
             <Grid item xs={12} sx={{ bgcolor: "#292931" }} p={2}>
