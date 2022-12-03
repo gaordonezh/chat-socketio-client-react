@@ -1,5 +1,5 @@
 import { Widgets } from "@mui/icons-material";
-import { Avatar, Box, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Box, CardActionArea, Grid, Stack, Typography } from "@mui/material";
 import { useWebSocketContext } from "../context/webSocketContext";
 import { sharedStyles } from "../utils/consts";
 import CardContainer from "./CardContainer";
@@ -7,7 +7,8 @@ import ChatInput from "./ChatInput";
 import ChatItems from "./ChatItems";
 
 const ChatContainer = () => {
-  const { selectedClient, messages, user, bottomRef } = useWebSocketContext();
+  const { selectedClient, messages, user, bottomRef, setOpenDetails } = useWebSocketContext();
+  const handleOpen = () => setOpenDetails(true);
 
   return (
     <CardContainer sx={{ bgcolor: "#141517", ...sharedStyles }}>
@@ -15,22 +16,25 @@ const ChatContainer = () => {
         {selectedClient ? (
           <>
             <Grid item sx={{ width: 90 }}>
-              <Avatar src={selectedClient?.logo} sx={{ height: 75, width: 75 }} />
+              <CardActionArea onClick={handleOpen}>
+                <Avatar src={selectedClient?.logo} sx={{ height: 75, width: 75 }} />
+              </CardActionArea>
             </Grid>
-            <Grid item sx={{ width: "calc((100%) - 100px)" }}>
-              <Typography variant="h4" noWrap>
-                {selectedClient?.description}
-              </Typography>
-              <Typography variant="body2" noWrap>
-                {`RUC: ${selectedClient?.ruc}`}
-              </Typography>
+            <Grid item sx={{ width: "calc((100%) - 90px)" }}>
+              <CardActionArea onClick={handleOpen}>
+                <Typography variant="h4" noWrap>
+                  {selectedClient?.description}
+                </Typography>
+                <Typography variant="body2" noWrap>
+                  {`RUC: ${selectedClient?.ruc}`}
+                </Typography>
+              </CardActionArea>
             </Grid>
             <Grid item xs={12} pt={5}>
               <Stack spacing={4} sx={{ overflowY: "auto", height: "calc((100vh) - 375px)", pb: 2 }}>
                 {messages.length ? (
                   messages.map((message, index) => {
                     const isMine = message.sender === user?._id;
-
                     return <ChatItems key={index} message={message} isMine={isMine} />;
                   })
                 ) : (

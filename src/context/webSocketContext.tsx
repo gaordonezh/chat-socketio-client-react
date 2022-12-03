@@ -24,6 +24,8 @@ interface ContextProps {
   handleSendMessage: (content: string) => void;
   user: null | UserProps;
   bottomRef: LegacyRef<HTMLDivElement>;
+  openDetails: boolean;
+  setOpenDetails: Dispatch<SetStateAction<boolean>>;
 }
 
 interface WebSocketProviderProps {
@@ -42,6 +44,7 @@ const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const [messages, setMessages] = useState<Array<MessageProps>>([]);
   const [selectedClient, setSelectedClient] = useState<null | ContactProps>(null);
   const [user, setUser] = useState<null | UserProps>(null);
+  const [openDetails, setOpenDetails] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -109,7 +112,18 @@ const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
   return (
     <WebSocket.Provider
-      value={{ socket, contacts, selectedClient, setSelectedClient, messages, handleSendMessage, user, bottomRef }}
+      value={{
+        socket,
+        contacts,
+        selectedClient,
+        setSelectedClient,
+        messages,
+        handleSendMessage,
+        user,
+        bottomRef,
+        openDetails,
+        setOpenDetails,
+      }}
     >
       {children}
     </WebSocket.Provider>
